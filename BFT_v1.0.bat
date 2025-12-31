@@ -32,6 +32,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "Write-Host '============
 :: Explorer Search Terms bia WordWheelQuery
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Write-Host '================= Explorer Search Keyword Analysis =================' -ForegroundColor Blue; $wordWheelPath='HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\WordWheelQuery';if (Test-Path $wordWheelPath) {Write-Host 'Scanning WordWheelQuery...' -ForegroundColor Cyan;$searchKeys=Get-ItemProperty -Path $wordWheelPath|Select-Object -Property * -ExcludeProperty PS*;foreach ($key in $searchKeys.PSObject.Properties) {if ($key.Name -ne '(default)') {if ($key.Value -is [byte[]]) {$decodedValue=[System.Text.Encoding]::Unicode.GetString($key.Value).TrimEnd([char]0);Write-Host '-----------------------------' -ForegroundColor Yellow;Write-Host 'Search Term: ' $decodedValue -ForegroundColor Green;} else {Write-Host '-----------------------------' -ForegroundColor Yellow;Write-Host 'Search Term: ' $key.Value -ForegroundColor Green;}}}} else {Write-Host 'WordWheelQuery key not found.' -ForegroundColor Red;}"
 
+:: RunMRU
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Write-Host '================= RunMRU (CMD Command History) =================' -ForegroundColor Blue;$runMRUPath='HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\RunMRU';if (Test-Path $runMRUPath) {    Write-Host 'Scanning RunMRU...' -ForegroundColor Cyan;    $runKey=Get-ItemProperty -Path $runMRUPath | Select-Object -Property * -ExcludeProperty PS*;    $mruList=$runKey.MRUList.ToCharArray();    foreach ($id in $mruList) {        if ($runKey.$id) {            Write-Host '-----------------------------' -ForegroundColor Yellow;            Write-Host 'Order   : ' $id -ForegroundColor White;            Write-Host 'Command : ' $runKey.$id -ForegroundColor Green;        }    }} else {    Write-Host 'RunMRU key not found.' -ForegroundColor Red;}"
+
 echo.
 echo Script execution completed.
 timeout /t 3 /nobreak >nul
+
